@@ -1,0 +1,42 @@
+{
+  "name": "react-faceapi-detection-hook",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": false,
+  "author": "Lucas Tiberio",
+  "description": "Very usefull face detection hooks powered by Face-Api",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist/ && yarn build:esm && yarn build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module CommonJS --outDir dist/cjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "encoding": "^0.1.13",
+    "face-api.js": "^0.22.2",
+    "fs": "^0.0.1-security",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.5.4"
+  },
+  "peerDependencies": {
+    "encoding": "^0.1.13",
+    "fs": "^0.0.1-security",
+    "face-api.js": "^0.22.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^4.5.4"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  }
+}
