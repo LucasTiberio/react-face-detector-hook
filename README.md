@@ -70,6 +70,7 @@ const MyAwesomeComponent = () => {
 
 
 ## Roadmap
+- [ ] Create useWebcam hook to toggle navigator camera devide.
 - [ ] Add support to create face storage or upload it.
 - [ ] Add callback on detect known face.
 
