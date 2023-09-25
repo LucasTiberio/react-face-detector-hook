@@ -90,9 +90,11 @@ const MyAwesomeComponent = () => {
 <br />
 
 ## Roadmap
-- [ ] Create useWebcam hook to easily toggle navigator camera device.
+- [X] Create useWebcam hook to easily toggle navigator camera device.
+- [ ] Create demo.
 - [ ] Add support to create face storage or upload it.
 - [ ] Add callback on detect known face.
+- [ ] Create documentation.
 
 
 ## License
