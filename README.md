@@ -67,18 +67,22 @@ faceApiModelsPath    | string     | "/facepi-models"    | "/models"        | pub
 
 ## Usage
 ```jsx
-import { useFaceDetector } from "react-faceapi-detection-hook";
+import { useFaceDetector, FaceDetection } from "react-faceapi-detection-hook";
 
 const MyAwesomeComponent = () => {
-  const videoRef = useRef(null)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { detectedFaces } = useFaceDetector(videoRef, {
+  useFaceDetector(videoRef, canvasRef, {
     enabled: true, // Default as true
-    fps: 30, // Default as 30
+    fps: 30, // Default as 30,
   })
 
   return (
-    <video ref={videoRef} />
+    <div style={{ position: "relative" }}>
+      <canvas ref={canvasRef} style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }} />
+      <video ref={videoRef} style={{ width: "100%", height: "100%" }} />
+    </>
   )
 };
 ```

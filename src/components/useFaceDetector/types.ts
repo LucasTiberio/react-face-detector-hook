@@ -1,4 +1,4 @@
-export type FaceRecognitionOptions = {
+export type FaceDetectorOptions = {
     enabled?: boolean;
     fps?: number;
 }

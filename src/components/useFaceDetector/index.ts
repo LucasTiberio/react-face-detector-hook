@@ -1,45 +1,56 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FaceDetection, TinyFaceDetectorOptions, detectAllFaces, resizeResults } from "face-api.js";
+import React, { useCallback, useEffect, useRef } from "react";
+import { TinyFaceDetectorOptions, detectAllFaces, draw, matchDimensions, resizeResults } from "face-api.js";
 
 import useFaceApiContext from "../VideoRecognitionContext/use-context-hook";
 
-import type { FaceRecognitionOptions } from "./types"
+import type { FaceDetectorOptions } from "./types"
 
-export default function useFaceRecognition(
+export default function useFaceDetector(
     videoRef: React.RefObject<HTMLVideoElement | null>,
-    options: FaceRecognitionOptions = {}
+    canvasRef: React.RefObject<HTMLCanvasElement | null>,
+    options: FaceDetectorOptions = {}
 ) {
     const { enabled = true, fps = 30 } = options;
 
     const timer = useRef<NodeJS.Timeout | null>(null);
-    const [detectedFaces, setDetectedFaces] = useState<FaceDetection[]>([]);
 
     const { hasFaceApiLoaded } = useFaceApiContext();
 
     const initializeDetection = useCallback(() => {
+        const { current: video } = videoRef || {};
+
+        if (!video || !hasFaceApiLoaded) {
+            return;
+        }
+
+        const videoSize = {
+            width: video.clientWidth,
+            height: video.clientHeight
+        }
+
         timer.current = setInterval(async () => {
-            if (!videoRef.current) {
+            if (!video) {
                 return;
             }
 
-            const videoSize = {
-                width: videoRef.current.clientWidth,
-                height: videoRef.current.clientHeight
-            }
-
             const detections = await detectAllFaces(
-                videoRef.current,
+                video,
                 new TinyFaceDetectorOptions()
             )
 
             const resizedDetections = resizeResults(detections, videoSize);
+            const { current: canvas } = canvasRef;
 
-            setDetectedFaces(resizedDetections);
+            if (canvas) {
+                matchDimensions(canvas, videoSize)
+                canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+                draw.drawDetections(canvas, resizedDetections);
+            }
         }, 1000 / fps)
-    }, [videoRef, fps])
+    }, [fps, hasFaceApiLoaded])
 
     useEffect(() => {
-        if (!hasFaceApiLoaded || !enabled) {
+        if (!enabled) {
             return;
         }
 
@@ -51,10 +62,9 @@ export default function useFaceRecognition(
                 timer.current = null;
             }
         }
-    }, [hasFaceApiLoaded, enabled, initializeDetection])
+    }, [enabled, initializeDetection])
 
     return {
-        detectedFaces,
-        loading: !!hasFaceApiLoaded
+        hasFaceApiLoaded
     }
 }
