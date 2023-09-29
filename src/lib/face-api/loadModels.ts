@@ -3,19 +3,21 @@ import {
     loadSsdMobilenetv1Model,
     loadTinyFaceDetectorModel,
     loadAgeGenderModel,
+    loadFaceLandmarkModel,
 } from 'face-api.js';
 
 let isLoaded = false;
 
-export const loadModels = async (path = "/faceapi-models") => {
+export default async function loadModels(path = "/faceapi-models") {
     if (isLoaded) {
         return;
     }
 
     try {
         await Promise.all([
-            loadFaceRecognitionModel(path),
             loadSsdMobilenetv1Model(path),
+            loadFaceLandmarkModel(path),
+            loadFaceRecognitionModel(path),
             loadTinyFaceDetectorModel(path),
             loadAgeGenderModel(path),
         ]);

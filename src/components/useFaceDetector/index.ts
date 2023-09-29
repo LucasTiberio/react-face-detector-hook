@@ -1,20 +1,27 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { TinyFaceDetectorOptions, detectAllFaces, draw, matchDimensions, resizeResults } from "face-api.js";
 
+// Hooks
 import useFaceApiContext from "../VideoRecognitionContext/use-context-hook";
 
+// Utils
+import { canvasUtils, faceApiUtils } from "../../utils";
+
+// Types
 import type { FaceDetectorOptions } from "./types"
 
 export default function useFaceDetector(
     videoRef: React.RefObject<HTMLVideoElement | null>,
     canvasRef: React.RefObject<HTMLCanvasElement | null>,
-    options: FaceDetectorOptions = {}
+    {
+        fps = 30,
+        enabled = true,
+        faceMatcherThreshold = 0.4,
+    }: FaceDetectorOptions = {}
 ) {
-    const { enabled = true, fps = 30 } = options;
-
     const timer = useRef<NodeJS.Timeout | null>(null);
 
-    const { hasFaceApiLoaded } = useFaceApiContext();
+    const { hasFaceApiLoaded, labels } = useFaceApiContext();
 
     const initializeDetection = useCallback(() => {
         const { current: video } = videoRef || {};
@@ -29,28 +36,30 @@ export default function useFaceDetector(
         }
 
         timer.current = setInterval(async () => {
-            if (!video) {
+            const { current: canvas } = canvasRef;
+            if (!video || !canvas) {
                 return;
             }
 
-            const detections = await detectAllFaces(
-                video,
-                new TinyFaceDetectorOptions()
-            )
+            const detections = await detectAllFaces(video, new TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceDescriptors()
 
             const resizedDetections = resizeResults(detections, videoSize);
-            const { current: canvas } = canvasRef;
 
-            if (canvas) {
-                matchDimensions(canvas, videoSize)
-                canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
-                draw.drawDetections(canvas, resizedDetections);
+            matchDimensions(canvas, videoSize)
+            canvasUtils.clearCanvas(canvas)
+
+            if (labels.length) {
+                faceApiUtils.drawFaceMatcherDetections(canvas, labels, resizedDetections, faceMatcherThreshold)
             }
+
+            draw.drawDetections(canvas, resizedDetections);
         }, 1000 / fps)
     }, [fps, hasFaceApiLoaded])
 
     useEffect(() => {
-        if (!enabled) {
+        if (!enabled || timer.current) {
             return;
         }
 

@@ -50,18 +50,23 @@ The VideoRecognitionContext take an face-api instance to load its models passind
 ```jsx
 import { VideoRecognitionContextProvider } from "react-faceapi-detection-hook";
 
+const exampleImageLabels = {
+  Fella: ["/assets/images/fella-1.png", "randomBase64"]
+}
+
 const App = () => {
   return (
-    <VideoRecognitionContextProvider>
+    <VideoRecognitionContextProvider imageLabels={exampleImageLabels}>
       {children}
     </VideoRecognitionContextProvider>
   )
 };
 ```
 
-props                | type       | defaultValue        | random example   | description                         |
----------------------|------------|---------------------|------------------|-------------------------------------|
-faceApiModelsPath    | string     | "/facepi-models"    | "/models"        | public face-api models folder path  |
+props                | type                     | defaultValue      | example                                                 | description                         |
+---------------------|--------------------------|-------------------|---------------------------------------------------------|-------------------------------------|
+imageLabels          | Record<string, string[]> | "/facepi-models"  | { PersonName: ["/images/person.png", "randomBase64"] }  | labels with respective images       |
+faceApiModelsPath    | string                   |  -------          | "/models"                                               | public face-api models folder path  |
 
 <br />
 
@@ -73,9 +78,16 @@ const MyAwesomeComponent = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  /** If you want, we have a built-in hook to enable webcam */
+  useCamera(videoRef, {
+    audio: false,
+    video: true,
+  })
+
   useFaceDetector(videoRef, canvasRef, {
+    fps: 60, // Default as 30,
     enabled: true, // Default as true
-    fps: 30, // Default as 30,
+    faceMatcherThreshold: 0.4, // Default as 0.4
   })
 
   return (
@@ -90,9 +102,11 @@ const MyAwesomeComponent = () => {
 <br />
 
 ## Roadmap
+- [X] Pushed first version for react-faceapi-detection-hook.
 - [X] Create useWebcam hook to easily toggle navigator camera device.
+- [x] Add support to inject "names" with its images.
+- [x] Add face recognition based on injected labels.
 - [ ] Create demo.
-- [ ] Add support to create face storage or upload it.
 - [ ] Add callback on detect known face.
 - [ ] Create documentation.
 
