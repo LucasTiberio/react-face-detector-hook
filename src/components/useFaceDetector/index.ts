@@ -16,6 +16,7 @@ export default function useFaceDetector(
     {
         fps = 30,
         enabled = true,
+        onRecognizeFace,
         faceMatcherThreshold = 0.4,
     }: FaceDetectorOptions = {}
 ) {
@@ -51,7 +52,7 @@ export default function useFaceDetector(
             canvasUtils.clearCanvas(canvas)
 
             if (labels.length) {
-                faceApiUtils.drawFaceMatcherDetections(canvas, labels, resizedDetections, faceMatcherThreshold)
+                faceApiUtils.drawFaceMatcherDetections(canvas, labels, resizedDetections, faceMatcherThreshold, onRecognizeFace)
             }
 
             draw.drawDetections(canvas, resizedDetections);

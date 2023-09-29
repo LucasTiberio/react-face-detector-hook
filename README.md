@@ -46,6 +46,7 @@ https://future.future/future
 In your root-level component, you have to add the provider.
 
 The VideoRecognitionContext take an face-api instance to load its models passind the props down using the Context API.
+Inside the Provider parent, you can make the requests, then pass the prop imageLabels
 
 ```jsx
 import { VideoRecognitionContextProvider } from "react-faceapi-detection-hook";
@@ -65,14 +66,14 @@ const App = () => {
 
 props                | type                     | defaultValue      | example                                                 | description                         |
 ---------------------|--------------------------|-------------------|---------------------------------------------------------|-------------------------------------|
-imageLabels          | Record<string, string[]> | "/facepi-models"  | { PersonName: ["/images/person.png", "randomBase64"] }  | labels with respective images       |
-faceApiModelsPath    | string                   |  -------          | "/models"                                               | public face-api models folder path  |
+imageLabels          | Record<string, string[]> |  []               | { PersonName: ["/images/person.png", "randomBase64"] }  | labels with respective images       |
+faceApiModelsPath    | string                   |  "/facepi-models" | "/models"                                               | public face-api models folder path  |
 
 <br />
 
 ## Usage
 ```jsx
-import { useFaceDetector, FaceDetection } from "react-faceapi-detection-hook";
+import { useFaceDetector, FaceDetection, FaceMatcher, useCamera } from "react-faceapi-detection-hook";
 
 const MyAwesomeComponent = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -87,7 +88,10 @@ const MyAwesomeComponent = () => {
   useFaceDetector(videoRef, canvasRef, {
     fps: 60, // Default as 30,
     enabled: true, // Default as true
-    faceMatcherThreshold: 0.4, // Default as 0.4
+    faceMatcherThreshold: 0.4, // Default as 0.4,
+    onRecognizeFace: (recognizedFace: FaceMatcher[]) => {
+      console.log({ label: recognizedFace.label })
+    }
   })
 
   return (
@@ -106,8 +110,8 @@ const MyAwesomeComponent = () => {
 - [X] Create useWebcam hook to easily toggle navigator camera device.
 - [x] Add support to inject "names" with its images.
 - [x] Add face recognition based on injected labels.
+- [x] Add callback on detect known face.
 - [ ] Create demo.
-- [ ] Add callback on detect known face.
 - [ ] Create documentation.
 
 

@@ -1,1 +1,1 @@
-export { FaceDetection } from "face-api.js";
+export { FaceDetection, FaceMatcher } from "face-api.js";
